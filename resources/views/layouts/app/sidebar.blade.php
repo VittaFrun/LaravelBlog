@@ -17,16 +17,14 @@
                     </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
-            <flux:navlist>
-    {{-- Tus otros enlaces (Dashboard, etc) --}}
-    
-    <flux:navlist.item href="{{ route('admin.categories.index') }}" icon="tag" :current="request()->routeIs('admin.categories.*')">
-        Categorías
-    </flux:navlist.item>
-    <flux:navlist.item href="{{ route('admin.posts.index') }}" icon="tag" :current="request()->routeIs('admin.posts.*')">
-        Posts
-    </flux:navlist.item>
-</flux:navlist>
+                <flux:sidebar.group heading="Gestión de Blog" class="grid">
+                    <flux:sidebar.item icon="tag" :href="route('admin.categories.index')" :current="request()->routeIs('admin.categories.*')" wire:navigate>
+                        Categorías
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="newspaper" :href="route('admin.posts.index')" :current="request()->routeIs('admin.posts.*')" wire:navigate>
+                        Posts
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
 
             <flux:spacer />
 

@@ -1,63 +1,33 @@
-<x-layouts::app.sidebar title="Editar Categoría">
-    <flux:main>
-        <div class="mb-6">
-            <flux:heading size="xl">Editar Categoría: {{ $category->name }}</flux:heading>
-            <flux:subheading>Modifica la información de la categoría seleccionada.</flux:subheading>
-        </div>
+<x-layouts::app :title="__('Editar Categoría')">
+    <div class="max-w-md mx-auto py-12 px-4">
+        <div class="premium-card-compact p-8 space-y-6">
+            <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                <flux:heading size="md" class="font-black">Editar: {{ $category->name }}</flux:heading>
+                <flux:button href="{{ route('admin.categories.index') }}" variant="ghost" size="xs" icon="x-mark" />
+            </div>
 
-        <flux:card>
-            <form action="{{ route('admin.categories.update', $category) }}" method="POST" class="space-y-6">
+            <form action="{{ route('admin.categories.update', $category) }}" method="POST" class="space-y-4">
                 @csrf
-                @method('PUT') {{-- Esto le dice a Laravel que es una actualización --}}
+                @method('PUT')
+                
+                <flux:field>
+                    <flux:label>Nombre</flux:label>
+                    <flux:input name="name" value="{{ old('name', $category->name) }}" placeholder="Ej. Tecnología" required id="name-input" size="sm" />
+                    <flux:error name="name" />
+                </flux:field>
 
-                <flux:input 
-                    label="Nombre de la categoría" 
-                    name="name" 
-                    id="name"
-                    :value="old('name', $category->name)" {{-- Carga el valor actual o el intento previo --}}
-                    required
-                />
-                @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                <flux:field>
+                    <flux:label>Slug (Identificador)</flux:label>
+                    <flux:input name="slug" value="{{ old('slug', $category->slug) }}" placeholder="tecnologia" required id="slug-input" size="sm" />
+                    <flux:error name="slug" />
+                </flux:field>
 
-                <flux:input 
-                    label="Slug (URL amigable)" 
-                    name="slug" 
-                    id="slug"
-                    :value="old('slug', $category->slug)"
-                    icon="link"
-                    required
-                />
-                @error('slug') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-
-                <div class="flex gap-2 justify-end">
-                    <flux:button href="{{ route('admin.categories.index') }}" variant="ghost">
-                        Cancelar
-                    </flux:button>
-                    
-                    <flux:button type="submit" variant="primary">
-                        Actualizar Categoría
+                <div class="pt-4 flex justify-end">
+                    <flux:button type="submit" variant="primary" size="sm" class="premium-gradient border-none px-8 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20">
+                        Guardar Cambios
                     </flux:button>
                 </div>
             </form>
-        </flux:card>
-
-        {{-- Reutilizamos el script para el slug --}}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const nameInput = document.getElementById('name');
-                const slugInput = document.getElementById('slug');
-
-                nameInput.addEventListener('keyup', function() {
-                    let title = nameInput.value;
-                    let slug = title.toLowerCase()
-                        .trim()
-                        .replace(/[^\w\s-]/g, '')
-                        .replace(/[\s_-]+/g, '-')
-                        .replace(/^-+|-+$/g, '');
-                    
-                    slugInput.value = slug;
-                });
-            });
-        </script>
-    </flux:main>
-</x-layouts::app.sidebar>
+        </div>
+    </div>
+</x-layouts::app>

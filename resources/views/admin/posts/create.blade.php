@@ -1,63 +1,111 @@
-<x-layouts::app.sidebar title="Crear Nuevo Post">
-    <flux:main>
-        <div class="mb-6">
-            <flux:heading size="xl" level="1">Crear Nuevo Post</flux:heading>
-            <flux:subheading>Completa todos los campos requeridos para el blog.</flux:subheading>
-        </div>
+<x-layouts::app :title="__('Nueva Historia')">
+    <div class="max-w-2xl mx-auto py-8 px-4">
+        <div class="premium-card-compact p-6 space-y-6">
+            <!-- Header Compact -->
+            <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                <flux:heading size="md" class="font-black">Nueva Historia</flux:heading>
+                <flux:button href="{{ route('admin.posts.index') }}" variant="ghost" size="xs" icon="x-mark" />
+            </div>
 
-        <flux:card>
-            <form action="{{ route('admin.posts.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route('admin.posts.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4" x-data="{ useUrl: false, preview: '' }">
                 @csrf
-                
-                <input type="hidden" name="user_id" value="{{ auth()->id() }}">
-                <input type="hidden" name="img_path" value="posts/default.jpg">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <flux:input label="Título" name="title" :value="old('title')" required />
-                    <flux:input label="Slug" name="slug" :value="old('slug')" required />
+                <!-- Basic Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <flux:field>
+                        <flux:label>Título</flux:label>
+                        <flux:input name="title" placeholder="..." required size="sm" id="title-input" />
+                        <flux:error name="title" />
+                    </flux:field>
+                    
+                    <flux:field>
+                        <flux:label>Categoría</flux:label>
+                        <flux:select name="category_id" size="sm">
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                            @endforeach
+                        </flux:select>
+                        <flux:error name="category_id" />
+                    </flux:field>
                 </div>
 
-                {{-- Excerpt es 'required' en tu controlador, así que debe ir visible o con valor --}}
-                <flux:textarea label="Resumen (Excerpt)" name="excerpt" :value="old('excerpt')" rows="2" required />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <flux:field>
+                        <flux:label>URL (Slug)</flux:label>
+                        <flux:input name="slug" placeholder="url-del-post" size="sm" id="slug-input" />
+                        <flux:error name="slug" />
+                    </flux:field>
+                    
+                    <flux:field>
+                        <flux:label>Fecha Programada</flux:label>
+                        <flux:input type="datetime-local" name="published_at" size="sm" value="{{ now()->format('Y-m-d\TH:i') }}" />
+                        <flux:error name="published_at" />
+                    </flux:field>
+                </div>
 
-                <flux:textarea label="Contenido del Post" name="content" rows="10" :value="old('content')" required />
+                <flux:field>
+                    <flux:label>Extracto</flux:label>
+                    <flux:textarea name="excerpt" rows="1" placeholder="Resumen corto..." size="sm" />
+                    <flux:error name="excerpt" />
+                </flux:field>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <flux:select label="Categoría" name="category_id">
-                        <option value="" disabled selected>Selecciona una categoría</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                {{ $category->name }}
-                            </option>
-                        @endforeach
-                    </flux:select>
+                <flux:field>
+                    <flux:label>Contenido</flux:label>
+                    <flux:textarea name="content" rows="6" placeholder="Escribe aquí..." size="sm" />
+                    <flux:error name="content" />
+                </flux:field>
 
-                    <flux:input type="datetime-local" label="Fecha de Publicación" name="published_at" :value="old('published_at')" />
+                <!-- Image Selector Compact -->
+                <div class="space-y-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    <div class="flex items-center justify-between">
+                        <flux:label class="text-[9px] font-black uppercase tracking-widest text-zinc-400">Portada del Post</flux:label>
+                        <div class="flex p-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-md">
+                            <button type="button" @click="useUrl = false" :class="!useUrl ? 'bg-white dark:bg-zinc-700 shadow-xs' : ''" class="px-2 py-0.5 text-[8px] font-bold uppercase rounded-sm transition-all">Upload</button>
+                            <button type="button" @click="useUrl = true" :class="useUrl ? 'bg-white dark:bg-zinc-700 shadow-xs' : ''" class="px-2 py-0.5 text-[8px] font-bold uppercase rounded-sm transition-all">URL</button>
+                        </div>
+                    </div>
 
-                    <div class="flex items-center md:pt-8">
-                        {{-- Laravel recibirá 0 si no se marca, o 1 si se marca --}}
-                        <input type="hidden" name="is_published" value="0">
-                        <flux:checkbox label="¿Publicar inmediatamente?" name="is_published" value="1" :checked="old('is_published')" />
+                    <div class="flex items-center gap-4">
+                        <div class="size-20 bg-zinc-50 dark:bg-zinc-900 rounded-lg flex items-center justify-center border border-zinc-100 dark:border-zinc-800 shrink-0 overflow-hidden">
+                            <template x-if="preview">
+                                <img :src="preview" class="w-full h-full object-cover">
+                            </template>
+                            <template x-if="!preview">
+                                <flux:icon icon="photo" class="size-6 text-zinc-300" />
+                            </template>
+                        </div>
+
+                        <div class="flex-1">
+                            <template x-if="!useUrl">
+                                <div class="flex items-center gap-3">
+                                    <input type="file" name="image" id="image-upload" class="hidden" accept="image/*" @change="let reader = new FileReader(); reader.onload = (e) => { preview = e.target.result }; reader.readAsDataURL($event.target.files[0])">
+                                    <flux:button onclick="document.getElementById('image-upload').click()" variant="ghost" size="xs" class="border-zinc-200">
+                                        <div class="flex items-center gap-2">
+                                            <flux:icon icon="arrow-up-tray" class="size-3" />
+                                            <span class="text-[9px] uppercase font-black">Elegir Archivo</span>
+                                        </div>
+                                    </flux:button>
+                                    <span class="text-[9px] text-zinc-400">JPG/PNG máx 2MB</span>
+                                </div>
+                            </template>
+
+                            <template x-if="useUrl">
+                                <flux:input name="img_path_url" placeholder="Pegar URL de la imagen aquí..." @input="preview = $event.target.value" size="sm" />
+                            </template>
+                            <flux:error name="image" />
+                            <flux:error name="img_path_url" />
+                        </div>
                     </div>
                 </div>
 
-                <div class="flex gap-2 justify-end">
-                    <flux:button as="a" :href="route('admin.posts.index')" variant="ghost" wire:navigate>
-                        Cancelar
-                    </flux:button>
-                    <flux:button type="submit" variant="primary">
-                        Guardar Post
+                <!-- Footer Actions -->
+                <div class="flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                    <flux:checkbox name="is_published" label="Publicar" class="scale-90" />
+                    <flux:button type="submit" variant="primary" size="sm" class="premium-gradient border-none px-8 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20">
+                        Crear Post
                     </flux:button>
                 </div>
             </form>
-        </flux:card>
-    </flux:main>
-</x-layouts::app.sidebar>
-<script>
-    document.querySelector('input[name="title"]').addEventListener('input', function() {
-        let slug = this.value.toLowerCase()
-            .replace(/[^\w ]+/g, '')
-            .replace(/ +/g, '-');
-        document.querySelector('input[name="slug"]').value = slug;
-    });
-</script>
+        </div>
+    </div>
+</x-layouts::app>

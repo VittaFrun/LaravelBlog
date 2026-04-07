@@ -26,6 +26,19 @@ class Post extends Model
         'published_at' => 'datetime',
     ];
 
+    public function getImageUrlAttribute()
+    {
+        if (!$this->img_path) {
+            return asset('storage/posts/default.jpg');
+        }
+        
+        if (str_starts_with($this->img_path, 'http')) {
+            return $this->img_path;
+        }
+
+        return asset('storage/' . $this->img_path);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

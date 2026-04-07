@@ -7,7 +7,7 @@
         <div class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
             <div class="bg-muted relative hidden h-full flex-col p-10 text-white lg:flex dark:border-e dark:border-neutral-800">
                 <!-- imagen de fondo -->
-                 <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('img/gatita.jpg'); width: 60vw; height:100%; background-size: cover; aspect-ratio: 16 / 9; " >
+                 <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('{{ asset('img/login_bg.png') }}'); width: 60vw; height:100%; background-size: cover; aspect-ratio: 16 / 9; " >
 
                  </div>
                 <!-- <div class="absolute inset-0 bg-neutral-900"></div> -->

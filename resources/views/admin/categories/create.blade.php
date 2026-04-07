@@ -1,63 +1,43 @@
-<x-layouts::app.sidebar title="Nueva Categoría">
-    <flux:main>
-        <div class="mb-6">
-            <flux:heading size="xl">Crear Categoría</flux:heading>
-            <flux:subheading>Añade una nueva clasificación para tus productos o artículos.</flux:subheading>
-        </div>
+<x-layouts::app :title="__('Nueva Categoría')">
+    <div class="max-w-md mx-auto py-12 px-4">
+        <div class="premium-card-compact p-8 space-y-6">
+            <div class="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
+                <flux:heading size="md" class="font-black">Nueva Categoría</flux:heading>
+                <flux:button href="{{ route('admin.categories.index') }}" variant="ghost" size="xs" icon="x-mark" />
+            </div>
 
-        <flux:card>
-            <form action="{{ route('admin.categories.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route('admin.categories.store') }}" method="POST" class="space-y-4">
                 @csrf
+                
+                <flux:field>
+                    <flux:label>Nombre</flux:label>
+                    <flux:input name="name" placeholder="Ej. Tecnología" required id="name-input" size="sm" />
+                    <flux:error name="name" />
+                </flux:field>
 
-                <flux:input 
-                    label="Nombre de la categoría" 
-                    placeholder="Ej: Electrónica" 
-                    name="name" 
-                    id="name"
-                    value="{{ old('name') }}"
-                    required
-                />
-                @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                <flux:field>
+                    <flux:label>Slug (Identificador)</flux:label>
+                    <flux:input name="slug" placeholder="tecnologia" required id="slug-input" size="sm" />
+                    <flux:error name="slug" />
+                </flux:field>
 
-                <flux:input 
-                    label="Slug (URL amigable)" 
-                    placeholder="ej-electronica" 
-                    name="slug" 
-                    id="slug"
-                    value="{{ old('slug') }}"
-                    icon="link"
-                    required
-                />
-                @error('slug') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-
-                <div class="flex gap-2 justify-end">
-                    <flux:button href="{{ route('admin.categories.index') }}" variant="ghost">
-                        Cancelar
-                    </flux:button>
-                    
-                    <flux:button type="submit" variant="primary">
-                        Guardar Categoría
+                <div class="pt-4 flex justify-end">
+                    <flux:button type="submit" variant="primary" size="sm" class="premium-gradient border-none px-8 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-500/20">
+                        Crear Categoría
                     </flux:button>
                 </div>
             </form>
-        </flux:card>
+        </div>
+    </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const nameInput = document.getElementById('name');
-                const slugInput = document.getElementById('slug');
-
-                nameInput.addEventListener('keyup', function() {
-                    let title = nameInput.value;
-                    let slug = title.toLowerCase()
-                        .trim()
-                        .replace(/[^\w\s-]/g, '')
-                        .replace(/[\s_-]+/g, '-')
-                        .replace(/^-+|-+$/g, '');
-                    
-                    slugInput.value = slug;
-                });
-            });
-        </script>
-    </flux:main>
-</x-layouts::app.sidebar>
+    <script>
+        document.getElementById('name-input').addEventListener('input', function() {
+            document.getElementById('slug-input').value = this.value
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^\w ]+/g, '')
+                .replace(/ +/g, '-');
+        });
+    </script>
+</x-layouts::app>
