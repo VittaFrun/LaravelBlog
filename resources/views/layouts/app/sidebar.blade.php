@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
     <head>
         @include('partials.head')
+        @stack('styles')
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
@@ -20,6 +21,9 @@
                 <flux:sidebar.group heading="Gestión de Blog" class="grid">
                     <flux:sidebar.item icon="tag" :href="route('admin.categories.index')" :current="request()->routeIs('admin.categories.*')" wire:navigate>
                         Categorías
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="hashtag" :href="route('admin.tags.index')" :current="request()->routeIs('admin.tags.*')" wire:navigate>
+                        Etiquetas
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="newspaper" :href="route('admin.posts.index')" :current="request()->routeIs('admin.posts.*')" wire:navigate>
                         Posts
@@ -100,5 +104,6 @@
         {{ $slot }}
 
         @fluxScripts
+        @stack('scripts')
     </body>
 </html>

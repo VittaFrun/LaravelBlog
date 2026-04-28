@@ -49,11 +49,24 @@
                     <flux:error name="excerpt" />
                 </flux:field>
 
-                <flux:field>
-                    <flux:label>Contenido</flux:label>
-                    <flux:textarea name="content" rows="6" placeholder="Escribe aquí..." size="sm" />
-                    <flux:error name="content" />
-                </flux:field>
+                <x-quill-editor name="content" label="Contenido" />
+                <flux:error name="content" />
+
+                <!-- Tags Selection -->
+                <div class="space-y-3 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    <flux:label class="text-[9px] font-black uppercase tracking-widest text-zinc-400">Etiquetas</flux:label>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($tags as $tag)
+                            <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                <input type="checkbox" name="tags[]" value="{{ $tag->id }}" class="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-xs font-medium text-zinc-700 dark:text-zinc-300">#{{ $tag->name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    @if($tags->isEmpty())
+                        <flux:text size="sm" class="text-zinc-400 italic">No hay etiquetas creadas. <a href="{{ route('admin.tags.create') }}" class="text-indigo-500 hover:underline">Crear una</a></flux:text>
+                    @endif
+                </div>
 
                 <!-- Image Selector Compact -->
                 <div class="space-y-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">

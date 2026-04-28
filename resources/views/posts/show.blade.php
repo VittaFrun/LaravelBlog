@@ -78,8 +78,19 @@
 
                 <!-- Content with premium typography -->
                 <div class="content-area text-zinc-300 text-base leading-relaxed antialiased">
-                    {!! nl2br(e($post->content)) !!}
+                    {!! $post->content !!}
                 </div>
+
+                <!-- Tags list -->
+                @if($post->tags->isNotEmpty())
+                    <div class="mt-12 flex flex-wrap gap-2">
+                        @foreach($post->tags as $tag)
+                            <span class="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
+                                #{{ $tag->name }}
+                            </span>
+                        @endforeach
+                    </div>
+                @endif
 
                 <!-- Footer of Artile -->
                 <div class="mt-20 pt-10 border-t border-white/5 flex flex-col items-center text-center">

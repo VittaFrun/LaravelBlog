@@ -22,7 +22,21 @@
                 </div>
 
                 <flux:textarea name="excerpt" label="Extracto" rows="1" placeholder="Resumen corto..." size="sm">{{ old('excerpt', $post->excerpt) }}</flux:textarea>
-                <flux:textarea name="content" label="Contenido" rows="5" placeholder="Escribe aquí..." size="sm">{{ old('content', $post->content) }}</flux:textarea>
+                
+                <x-quill-editor name="content" label="Contenido" :value="old('content', $post->content)" />
+
+                <!-- Tags Selection -->
+                <div class="space-y-3 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                    <flux:label class="text-[9px] font-black uppercase tracking-widest text-zinc-400">Etiquetas</flux:label>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($tags as $tag)
+                            <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                <input type="checkbox" name="tags[]" value="{{ $tag->id }}" {{ $post->tags->contains($tag->id) ? 'checked' : '' }} class="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500">
+                                <span class="text-xs font-medium text-zinc-700 dark:text-zinc-300">#{{ $tag->name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
 
                 <!-- Image Selector Compact -->
                 <div class="space-y-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
