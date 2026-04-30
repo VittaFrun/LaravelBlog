@@ -1,20 +1,14 @@
 {
     "version": 2,
-    "framework": null,
-    "outputDirectory": ".",
     "functions": {
-        "api/*.php": {
+        "api/index.php": {
             "runtime": "vercel-php@0.7.1"
         }
     },
     "routes": [
         {
-            "src": "/(css|js|img|favicon.ico|favicon.svg|apple-touch-icon.png|storage)/(.*)",
+            "src": "/(css|js|img|favicon.ico|build|storage)/(.*)",
             "dest": "/public/$1/$2"
-        },
-        {
-            "src": "/build/(.*)",
-            "dest": "/public/build/$1"
         },
         {
             "src": "/(.*)",
